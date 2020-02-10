@@ -310,7 +310,7 @@ def __user_info__(user_id):
         user = sql.get_gbanned_user(user_id)
         if user.reason:
             text += "\n<b>Reason:</b> {}".format(html.escape(user.reason))
-        text += "\n<b>Appeal Chat:</b> @OnePunchSupport"
+        text += "\n<b>Appeal Chat:</b> @userbot_chat"
     else:
         text = text.format("No")
     return text
@@ -331,7 +331,7 @@ __help__ = """
 Gbans, also known as global bans, are used by the bot owners to ban spammers across all groups. This helps protect \
 you and your groups by removing spam flooders as quickly as possible. They can be disabled for you group by calling \
 /gbanstat
-Note: You can appeal gbans or ask gbans at @OnePunchSupport
+Note: You can appeal gbans or ask gbans at @userbot_chat
 """
 
 __mod_name__ = "Global Bans"
