@@ -3,53 +3,16 @@ from typing import Optional
 
 from telegram import User, Chat, ChatMember, Update, Bot
 
-from tg_bot import DEL_CMDS, SUDO_USERS, WHITELIST_USERS, DEV_USERS
+from tg_bot import DEL_CMDS, SUDO_USERS, WHITELIST_USERS
 
 
 def can_delete(chat: Chat, bot_id: int) -> bool:
     return chat.get_member(bot_id).can_delete_messages
 
-def sudo_plus(func):
-    @wraps(func)
-    def is_admin(bot: Bot, update: Update, *args, **kwargs):
-        user = update.effective_user  # type: Optional[User]
-        if user and is_sudo_plus(update.effective_chat, user.id):
-            return func(bot, update, *args, **kwargs)
-
-        elif not user:
-            pass
-
-        elif DEL_CMDS and " " not in update.effective_message.text:
-            update.effective_message.delete()
-
-        else:
-            update.effective_message.reply_text("Who dis non-admin telling me what to do? You want a punch?")
-
-    return is_admin
-
-def dev_plus(func):
-    @wraps(func)
-    def is_admin(bot: Bot, update: Update, *args, **kwargs):
-        user = update.effective_user  # type: Optional[User]
-        if user.id in DEV_USERS:
-            return func(bot, update, *args, **kwargs)
-
-        elif not user:
-            pass
-
-        elif DEL_CMDS and " " not in update.effective_message.text:
-            update.effective_message.delete()
-
-        else:
-            update.effective_message.reply_text("This is a developer restricted command. You do not have permissions to run this.")
-
-    return is_admin
-
 
 def is_user_ban_protected(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
     if chat.type == 'private' \
             or user_id in SUDO_USERS \
-            or user_id in DEV_USERS \
             or user_id in WHITELIST_USERS \
             or chat.all_members_are_administrators:
         return True
@@ -58,13 +21,10 @@ def is_user_ban_protected(chat: Chat, user_id: int, member: ChatMember = None) -
         member = chat.get_member(user_id)
     return member.status in ('administrator', 'creator')
 
-def is_sudo_plus(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
-    return user_id in SUDO_USERS or user_id in DEV_USERS
 
 def is_user_admin(chat: Chat, user_id: int, member: ChatMember = None) -> bool:
     if chat.type == 'private' \
             or user_id in SUDO_USERS \
-            or user_id in DEV_USERS \
             or chat.all_members_are_administrators:
         return True
 
@@ -142,7 +102,7 @@ def bot_admin(func):
         if is_bot_admin(update.effective_chat, bot.id):
             return func(bot, update, *args, **kwargs)
         else:
-            update.effective_message.reply_text("I'm not admin! - REEEEEE")
+            update.effective_message.reply_text("I'm not admin!")
 
     return is_admin
 
@@ -161,7 +121,7 @@ def user_admin(func):
             update.effective_message.delete()
 
         else:
-            update.effective_message.reply_text("Who dis non-admin telling me what to do? You want a punch?")
+            update.effective_message.reply_text("Who dis non-admin telling me what to do?")
 
     return is_admin
 
